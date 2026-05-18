@@ -33,40 +33,58 @@ export default function useTasks() {
 
     setError(null);
 
+    const tempTask = {
+      id: Date.now(),
+      title: input,
+      completed: false,
+    };
+
+    // Update UI immediately
+    setTasks((prev) => [...prev, tempTask]);
+    setInput("");
+
+    //send request to backend
     API.post("/tasks", { title: input })
-      .then(() => {
-        setInput("");
-        fetchTasks();
+      .then((res) => {
+        // replace tempTask with actual task from backend
+        setTasks((prev) =>
+          prev.map((t) => (t.id === tempTask.id ? res.data : t)),
+        );
       })
       .catch((err) => {
+        //rollback
+        setTasks((prev) => prev.filter((t) => t.id !== tempTask.id));
         setError("Failed to add task");
         console.log(err);
       });
   };
 
   const handleToggle = (id) => {
-    API.put(`/tasks/${id}`)
-      .then(() => {
-        setTasks((prev) =>
-          prev.map((t) =>
-            t.id === id ? { ...t, completed: !t.completed } : t,
-          ),
-        );
-      })
-      .catch((err) => {
-        setError("Something went wrong");
-        console.log(err);
-      });
+    // 1. optimistic update
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+    );
+
+    // 2. API call
+    API.put(`/tasks/${id}`).catch(() => {
+      // rollback if failed
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+      );
+    });
   };
 
   const handleDelete = (id) => {
-    API.delete(`/tasks/${id}`)
-      .then(() => {
-        setTasks((prev) => prev.filter((t) => t.id !== id));
-      })
-      .catch((err) => {
-        setError("Something went wrong");
-      });
+    const backup = tasks;
+
+    // 1. instant remove
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+
+    // 2. API call
+    API.delete(`/tasks/${id}`).catch(() => {
+      // rollback if error
+      setTasks(backup);
+    });
   };
 
   return {
