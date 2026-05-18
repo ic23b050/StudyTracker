@@ -60,22 +60,27 @@ export default function useTasks() {
   };
 
   const handleToggle = (id) => {
-    // 1. optimistic update
+    let previousTask;
+
+    // optimistic update + capture old value
     setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
+      prev.map((t) => {
+        if (t.id === id) {
+          previousTask = t; // store original
+          return { ...t, completed: !t.completed };
+        }
+        return t;
+      }),
     );
 
-    // 2. API call
     API.put(`/tasks/${id}`).catch(() => {
-      // rollback if failed
-      setTasks((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)),
-      );
+      // rollback using exact previous value
+      setTasks((prev) => prev.map((t) => (t.id === id ? previousTask : t)));
     });
   };
 
   const handleDelete = (id) => {
-    const backup = tasks;
+    const previousTasks = tasks;
 
     // 1. instant remove
     setTasks((prev) => prev.filter((t) => t.id !== id));
@@ -83,7 +88,7 @@ export default function useTasks() {
     // 2. API call
     API.delete(`/tasks/${id}`).catch(() => {
       // rollback if error
-      setTasks(backup);
+      setTasks(previousTasks);
     });
   };
 
