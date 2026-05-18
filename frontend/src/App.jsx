@@ -1,33 +1,18 @@
-import { useEffect, useState } from "react";
-import API from "./services/api.js";
+import TaskInput from "./components/TaskInput";
+import TaskList from "./components/TaskList";
+import useTasks from "./hooks/useTasks";
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    API.get("/tasks")
-      .then((res) => {
-        console.log(res.data);
-        setTasks(res.data || []);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  const { tasks, input, setInput, handleAdd, handleToggle, handleDelete } =
+    useTasks();
 
   return (
     <div>
       <h1>Study Tracker</h1>
 
-      {tasks.length === 0 ? (
-        <p>No tasks found</p>
-      ) : (
-        tasks.map((task) => (
-          <div key={task.id}>
-            <h3>{task.title}</h3>
-          </div>
-        ))
-      )}
+      <TaskInput input={input} setInput={setInput} onAdd={handleAdd} />
+
+      <TaskList tasks={tasks} onToggle={handleToggle} onDelete={handleDelete} />
     </div>
   );
 }

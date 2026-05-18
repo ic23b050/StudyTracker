@@ -22,6 +22,6 @@ public class Task {
 
     private String title;
 
-    private boolean completed;
+    private Boolean completed = false;
 
 }
