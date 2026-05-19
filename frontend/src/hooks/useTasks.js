@@ -6,6 +6,7 @@ export default function useTasks() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [priority, setPriority] = useState("MEDIUM");
 
   const fetchTasks = () => {
     setLoading(true);
@@ -37,6 +38,7 @@ export default function useTasks() {
       id: Date.now(),
       title: input,
       completed: false,
+      priority: priority,
     };
 
     // Update UI immediately
@@ -44,7 +46,7 @@ export default function useTasks() {
     setInput("");
 
     //send request to backend
-    API.post("/tasks", { title: input })
+    API.post("/tasks", { title: input, priority: priority })
       .then((res) => {
         // replace tempTask with actual task from backend
         setTasks((prev) =>
@@ -92,6 +94,26 @@ export default function useTasks() {
     });
   };
 
+  const handlePriorityChange = (id, newPriority) => {
+    let previousTask;
+
+    // optimistic update + capture old value
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          previousTask = t;
+          return { ...t, priority: newPriority };
+        }
+        return t;
+      }),
+    );
+
+    API.put(`/tasks/${id}/priority`, { priority: newPriority }).catch(() => {
+      // rollback if error
+      setTasks((prev) => prev.map((t) => (t.id === id ? previousTask : t)));
+    });
+  };
+
   return {
     tasks,
     input,
@@ -101,5 +123,8 @@ export default function useTasks() {
     handleDelete,
     loading,
     error,
+    priority,
+    setPriority,
+    handlePriorityChange,
   };
 }

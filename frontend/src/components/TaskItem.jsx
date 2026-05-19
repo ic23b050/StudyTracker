@@ -1,4 +1,7 @@
-function TaskItem({ task, onToggle, onDelete }) {
+import priority from "../hooks/useTasks";
+import setPriority from "../hooks/useTasks";
+
+function TaskItem({ task, onToggle, onDelete, onPriorityChange }) {
   return (
     <div className={`task-item ${task.completed ? "completed" : ""}`}>
       <h3
@@ -9,6 +12,14 @@ function TaskItem({ task, onToggle, onDelete }) {
         {task.title}
       </h3>
       <div className="task-action">
+        <select
+          value={task.priority || "MEDIUM"}
+          onChange={(e) => onPriorityChange(task.id, e.target.value)}
+        >
+          <option value="LOW">Low</option>
+          <option value="MEDIUM">Medium</option>
+          <option value="HIGH">High</option>
+        </select>
         <button onClick={() => onToggle(task.id)}>
           {task.completed ? "Undo" : "Complete"}
         </button>

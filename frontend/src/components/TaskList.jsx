@@ -1,6 +1,6 @@
 import TaskItem from "./TaskItem";
 
-function TaskList({ tasks, onToggle, onDelete }) {
+function TaskList({ tasks, onToggle, onDelete, onPriorityChange }) {
   return (
     <div>
       {tasks.length === 0 ? (
@@ -12,6 +12,7 @@ function TaskList({ tasks, onToggle, onDelete }) {
             task={task}
             onToggle={onToggle}
             onDelete={onDelete}
+            onPriorityChange={onPriorityChange}
           />
         ))
       )}

@@ -5,8 +5,10 @@ import com.anwar.backend.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.anwar.backend.enums.Priority;
 import java.util.List;
+import java.util.Map;
+
 
 
 @RestController
@@ -46,4 +48,19 @@ public ResponseEntity<Task> toggleCompletion(@PathVariable Long id) {
     public void deleteTask(@PathVariable Long id) {
         taskRepository.deleteById(id);
     }
+    @PutMapping("/{id}/priority")
+public ResponseEntity<Task> updatePriority(
+        @PathVariable Long id,
+        @RequestBody Map<String, String> body
+) {
+    String priority = body.get("priority");
+
+    return taskRepository.findById(id)
+            .map(task -> {
+                task.setPriority(Priority.valueOf(priority));
+                return ResponseEntity.ok(taskRepository.save(task));
+            })
+            .orElse(ResponseEntity.notFound().build());
+}
+
 }

@@ -13,6 +13,9 @@ function App() {
     handleDelete,
     loading,
     error,
+    priority,
+    setPriority,
+    handlePriorityChange,
   } = useTasks();
 
   const totalTasks = tasks.length;
@@ -34,6 +37,10 @@ function App() {
         onDelete={handleDelete}
         loading={loading}
         error={error}
+        priority={priority}
+        setPriority={setPriority}
+        handlePriorityChange={handlePriorityChange}
+        onPriorityChange={handlePriorityChange}
       />
     </div>
   );
