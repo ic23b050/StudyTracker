@@ -1,6 +1,6 @@
 function TaskItem({ task, onToggle, onDelete }) {
   return (
-    <div>
+    <div className={`task-item ${task.completed ? "completed" : ""}`}>
       <h3
         style={{
           textDecoration: task.completed ? "line-through" : "none",
@@ -8,12 +8,13 @@ function TaskItem({ task, onToggle, onDelete }) {
       >
         {task.title}
       </h3>
+      <div className="task-action">
+        <button onClick={() => onToggle(task.id)}>
+          {task.completed ? "Undo" : "Complete"}
+        </button>
 
-      <button onClick={() => onToggle(task.id)}>
-        {task.completed ? "Undo" : "Complete"}
-      </button>
-
-      <button onClick={() => onDelete(task.id)}>Delete</button>
+        <button onClick={() => onDelete(task.id)}>Delete</button>
+      </div>
     </div>
   );
 }
