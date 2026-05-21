@@ -8,6 +8,10 @@ function TaskItem({
   onPriorityChange,
   onDueDateChange,
 }) {
+  const daysLeft = Math.round(
+    (new Date(task.dueDate).getTime() - new Date().getTime()) /
+      (1000 * 60 * 60 * 24),
+  );
   return (
     <div
       className={`task-item ${task.completed ? "completed" : ""} ${task.priority ? task.priority.toLowerCase() : ""}`}
@@ -33,6 +37,13 @@ function TaskItem({
           value={task.dueDate ? task.dueDate.split("T")[0] : ""}
           onChange={(e) => onDueDateChange(task.id, e.target.value)}
         />
+        <p>
+          {task.dueDate
+            ? daysLeft === 0
+              ? "Due today"
+              : "Due in " + daysLeft + " days"
+            : "No due date set"}
+        </p>
         <button onClick={() => onToggle(task.id)}>
           {task.completed ? "Undo" : "Complete"}
         </button>
