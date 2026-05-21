@@ -2,8 +2,12 @@ package com.anwar.backend.controller;
 
 import com.anwar.backend.entity.Task;
 import com.anwar.backend.repository.TaskRepository;
+import com.anwar.backend.repository.UserRepository;
+import com.anwar.backend.entity.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import com.anwar.backend.enums.Priority;
 
@@ -20,16 +24,28 @@ import java.util.Map;
 public class TaskController {
 
     @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
     private TaskRepository taskRepository;
+
+     private String getCurrentUsername() {
+        return SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+    }
 
     @GetMapping
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        
+        return taskRepository.findByUserUsername(getCurrentUsername());
     }
 
     @PostMapping
     public Task createTask(@RequestBody Task task) {
 
+    User user = userRepository.findByUsername(getCurrentUsername()).orElseThrow(() -> new RuntimeException("User not found"));
+        task.setUser(user);
         if (task.getCompleted() == null) {
         task.setCompleted(false);
     }
@@ -39,7 +55,7 @@ public class TaskController {
     @PutMapping("/{id}")
     public ResponseEntity<Task> toggleCompletion(@PathVariable Long id) {
 
-    return taskRepository.findById(id)
+    return taskRepository.findByIdAndUserUsername(id, getCurrentUsername())
         .map(task -> {
             task.setCompleted(!task.getCompleted());
             return ResponseEntity.ok(taskRepository.save(task));
@@ -48,9 +64,14 @@ public class TaskController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
-        taskRepository.deleteById(id);
-    }
+public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
+    return taskRepository.findByIdAndUserUsername(id, getCurrentUsername())
+        .map(task -> {
+            taskRepository.delete(task);
+            return ResponseEntity.noContent().<Void>build();
+        })
+        .orElse(ResponseEntity.notFound().build());
+}
 
     @PutMapping("/{id}/priority")
     public ResponseEntity<Task> updatePriority(
@@ -59,7 +80,7 @@ public class TaskController {
     ) {
     String priority = body.get("priority");
 
-    return taskRepository.findById(id)
+    return taskRepository.findByIdAndUserUsername(id, getCurrentUsername())
             .map(task -> {
                 task.setPriority(Priority.valueOf(priority));
                 return ResponseEntity.ok(taskRepository.save(task));
@@ -71,7 +92,7 @@ public class TaskController {
     public ResponseEntity<Task> updateDueDate(@PathVariable Long id, @RequestBody Map<String, String> body) {
         String dueDate = body.get("dueDate");
 
-        return taskRepository.findById(id)
+        return taskRepository.findByIdAndUserUsername(id, getCurrentUsername())
                 .map(task -> {
                     if (dueDate == null || dueDate.isEmpty()) {
                         task.setDueDate(null);
@@ -82,4 +103,6 @@ public class TaskController {
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    
 }
