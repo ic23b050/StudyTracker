@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import API from "../services/api.js";
+import token from "./useAuth.js";
 
-export default function useTasks() {
+export default function useTasks(token) {
   const [tasks, setTasks] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,8 +28,10 @@ export default function useTasks() {
   };
 
   useEffect(() => {
+    if (!token) return;
+
     fetchTasks();
-  }, []);
+  }, [token]);
 
   const handleAdd = () => {
     if (!input.trim()) return;

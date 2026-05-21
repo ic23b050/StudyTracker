@@ -2,8 +2,11 @@ import useTasks from "./hooks/useTasks";
 import Header from "./components/Header";
 import Stats from "./components/Stats";
 import TaskSection from "./components/TaskSection";
+import Login from "./components/Login";
+import useAuth from "./hooks/useAuth";
 
 function App() {
+  const { token, login, logout, error: autherror } = useAuth();
   const {
     tasks,
     input,
@@ -12,14 +15,14 @@ function App() {
     handleToggle,
     handleDelete,
     loading,
-    error,
+    error: taskError,
     priority,
     setPriority,
     handlePriorityChange,
     dueDate,
     setDueDate,
     handleDueDateChange,
-  } = useTasks();
+  } = useTasks(token);
 
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((task) => task.completed).length;
@@ -27,28 +30,37 @@ function App() {
 
   return (
     <div className="app">
-      <Header />
+      <Header logout={logout} />
+      {token ? (
+        <>
+          <Stats
+            total={totalTasks}
+            completed={completedTasks}
+            open={openTasks}
+          />
 
-      <Stats total={totalTasks} completed={completedTasks} open={openTasks} />
-
-      <TaskSection
-        tasks={tasks}
-        input={input}
-        setInput={setInput}
-        onAdd={handleAdd}
-        onToggle={handleToggle}
-        onDelete={handleDelete}
-        loading={loading}
-        error={error}
-        priority={priority}
-        setPriority={setPriority}
-        handlePriorityChange={handlePriorityChange}
-        onPriorityChange={handlePriorityChange}
-        dueDate={dueDate}
-        setDueDate={setDueDate}
-        handleDueDateChange={handleDueDateChange}
-        onDueDateChange={handleDueDateChange}
-      />
+          <TaskSection
+            tasks={tasks}
+            input={input}
+            setInput={setInput}
+            onAdd={handleAdd}
+            onToggle={handleToggle}
+            onDelete={handleDelete}
+            loading={loading}
+            error={taskError}
+            priority={priority}
+            setPriority={setPriority}
+            handlePriorityChange={handlePriorityChange}
+            onPriorityChange={handlePriorityChange}
+            dueDate={dueDate}
+            setDueDate={setDueDate}
+            handleDueDateChange={handleDueDateChange}
+            onDueDateChange={handleDueDateChange}
+          />
+        </>
+      ) : (
+        <Login login={login} error={autherror} />
+      )}
     </div>
   );
 }

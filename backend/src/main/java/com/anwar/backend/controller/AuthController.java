@@ -8,12 +8,14 @@ import com.anwar.backend.dto.LoginRequest;
 import com.anwar.backend.entity.User;
 import com.anwar.backend.repository.UserRepository;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.anwar.backend.service.JwtService;
 
 @RestController
 @RequestMapping("/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final PasswordEncoder passwordEncoder;
