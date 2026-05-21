@@ -1,7 +1,13 @@
 import priority from "../hooks/useTasks";
 import setPriority from "../hooks/useTasks";
 
-function TaskItem({ task, onToggle, onDelete, onPriorityChange }) {
+function TaskItem({
+  task,
+  onToggle,
+  onDelete,
+  onPriorityChange,
+  onDueDateChange,
+}) {
   return (
     <div
       className={`task-item ${task.completed ? "completed" : ""} ${task.priority ? task.priority.toLowerCase() : ""}`}
@@ -22,6 +28,11 @@ function TaskItem({ task, onToggle, onDelete, onPriorityChange }) {
           <option value="MEDIUM">Medium</option>
           <option value="HIGH">High</option>
         </select>
+        <input
+          type="date"
+          value={task.dueDate ? task.dueDate.split("T")[0] : ""}
+          onChange={(e) => onDueDateChange(task.id, e.target.value)}
+        />
         <button onClick={() => onToggle(task.id)}>
           {task.completed ? "Undo" : "Complete"}
         </button>

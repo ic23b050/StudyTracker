@@ -1,5 +1,12 @@
-function TaskInput({ input, setInput, onAdd, priority, setPriority }) {
-  console.log("TaskInput priority:", priority);
+function TaskInput({
+  input,
+  setInput,
+  onAdd,
+  priority,
+  setPriority,
+  dueDate,
+  setDueDate,
+}) {
   return (
     <div className="input">
       <input value={input} onChange={(e) => setInput(e.target.value)} />
@@ -8,6 +15,11 @@ function TaskInput({ input, setInput, onAdd, priority, setPriority }) {
         <option value="MEDIUM">Medium</option>
         <option value="HIGH">High</option>
       </select>
+      <input
+        type="date"
+        value={dueDate || ""}
+        onChange={(e) => setDueDate(e.target.value)}
+      />
       <button onClick={onAdd}>Add Task</button>
     </div>
   );

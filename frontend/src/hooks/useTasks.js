@@ -7,6 +7,7 @@ export default function useTasks() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [priority, setPriority] = useState("MEDIUM");
+  const [dueDate, setDueDate] = useState("");
 
   const fetchTasks = () => {
     setLoading(true);
@@ -39,6 +40,7 @@ export default function useTasks() {
       title: input,
       completed: false,
       priority: priority,
+      dueDate: dueDate,
     };
 
     // Update UI immediately
@@ -46,7 +48,7 @@ export default function useTasks() {
     setInput("");
 
     //send request to backend
-    API.post("/tasks", { title: input, priority: priority })
+    API.post("/tasks", { title: input, priority: priority, dueDate: dueDate })
       .then((res) => {
         // replace tempTask with actual task from backend
         setTasks((prev) =>
@@ -114,6 +116,30 @@ export default function useTasks() {
     });
   };
 
+  const handleDueDateChange = (id, newDueDate) => {
+    let previousTask;
+
+    // split date to remove time part
+    const dateWithoutTime = newDueDate ? newDueDate.split("T")[0] : "";
+
+    // optimistic update + capture old value
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id === id) {
+          previousTask = t;
+          return { ...t, dueDate: dateWithoutTime };
+        }
+        return t;
+      }),
+    );
+
+    // API call
+    API.put(`/tasks/${id}/dueDate`, { dueDate: dateWithoutTime }).catch(() => {
+      // rollback if error
+      setTasks((prev) => prev.map((t) => (t.id === id ? previousTask : t)));
+    });
+  };
+
   return {
     tasks,
     input,
@@ -126,5 +152,8 @@ export default function useTasks() {
     priority,
     setPriority,
     handlePriorityChange,
+    dueDate,
+    setDueDate,
+    handleDueDateChange,
   };
 }

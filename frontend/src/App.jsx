@@ -16,6 +16,9 @@ function App() {
     priority,
     setPriority,
     handlePriorityChange,
+    dueDate,
+    setDueDate,
+    handleDueDateChange,
   } = useTasks();
 
   const totalTasks = tasks.length;
@@ -41,6 +44,10 @@ function App() {
         setPriority={setPriority}
         handlePriorityChange={handlePriorityChange}
         onPriorityChange={handlePriorityChange}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        handleDueDateChange={handleDueDateChange}
+        onDueDateChange={handleDueDateChange}
       />
     </div>
   );

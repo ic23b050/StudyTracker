@@ -14,6 +14,10 @@ function TaskSection({
   setPriority,
   handlePriorityChange,
   onPriorityChange,
+  dueDate,
+  setDueDate,
+  handleDueDateChange,
+  onDueDateChange,
 }) {
   return (
     <div className="task-section">
@@ -23,6 +27,8 @@ function TaskSection({
         onAdd={onAdd}
         priority={priority}
         setPriority={setPriority}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
       />
 
       {loading && <p>Loading...</p>}
@@ -33,6 +39,7 @@ function TaskSection({
         onToggle={onToggle}
         onDelete={onDelete}
         onPriorityChange={onPriorityChange}
+        onDueDateChange={onDueDateChange}
       />
     </div>
   );
