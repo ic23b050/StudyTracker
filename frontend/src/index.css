@@ -106,6 +106,18 @@ button:hover {
   );
 }
 
+.low {
+  border-left: 4px solid #fbbf24;
+}
+
+.medium {
+  border-left: 4px solid #f97316;
+}
+
+.high {
+  border-left: 4px solid #dc2626;
+}
+
 .task-action {
   display: flex;
   gap: 10px;

@@ -3,7 +3,9 @@ import setPriority from "../hooks/useTasks";
 
 function TaskItem({ task, onToggle, onDelete, onPriorityChange }) {
   return (
-    <div className={`task-item ${task.completed ? "completed" : ""}`}>
+    <div
+      className={`task-item ${task.completed ? "completed" : ""} ${task.priority ? task.priority.toLowerCase() : ""}`}
+    >
       <h3
         style={{
           textDecoration: task.completed ? "line-through" : "none",
