@@ -6,7 +6,7 @@ import Login from "./components/Login";
 import useAuth from "./hooks/useAuth";
 
 function App() {
-  const { token, login, logout, error: autherror } = useAuth();
+  const { token, handleLogin, handleLogout, error: autherror } = useAuth();
   const {
     tasks,
     input,
@@ -30,7 +30,7 @@ function App() {
 
   return (
     <div className="app">
-      <Header logout={logout} />
+      <Header onLogout={handleLogout} />
       {token ? (
         <>
           <Stats
@@ -59,7 +59,7 @@ function App() {
           />
         </>
       ) : (
-        <Login login={login} error={autherror} />
+        <Login onLogin={handleLogin} error={autherror} />
       )}
     </div>
   );

@@ -5,7 +5,7 @@ export default function useAuth() {
   const [error, setError] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token"));
 
-  const login = async (username, password) => {
+  const handleLogin = async (username, password) => {
     try {
       const res = await API.post("/auth/login", {
         username,
@@ -21,14 +21,14 @@ export default function useAuth() {
     }
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
   };
 
   return {
-    login,
-    logout,
+    handleLogin,
+    handleLogout,
     error,
     token,
   };
