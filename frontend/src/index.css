@@ -93,6 +93,16 @@ button:hover {
   transition: all 0.3s;
 }
 
+.register {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background-color: #1e293b;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 20px;
+}
+
 .task-item:hover {
   transform: translateY(-3px);
 }

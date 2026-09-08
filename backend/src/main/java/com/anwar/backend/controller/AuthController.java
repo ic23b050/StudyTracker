@@ -1,5 +1,6 @@
 package com.anwar.backend.controller;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.anwar.backend.service.JwtService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @RestController
 @RequestMapping("/auth")
@@ -42,6 +45,11 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
         return jwtService.generateToken(foundUser.getUsername());
+    }
+    
+    @GetMapping("/me")
+    public String getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        return userDetails.getUsername();
     }
     
 }

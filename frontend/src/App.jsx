@@ -4,9 +4,18 @@ import Stats from "./components/Stats";
 import TaskSection from "./components/TaskSection";
 import Login from "./components/Login";
 import useAuth from "./hooks/useAuth";
+import Register from "./components/Register";
+import React from "react";
 
 function App() {
-  const { token, handleLogin, handleLogout, error: autherror } = useAuth();
+  const {
+    token,
+    handleLogin,
+    handleLogout,
+    error: autherror,
+    userName,
+    handleRegistration,
+  } = useAuth();
   const {
     tasks,
     input,
@@ -27,10 +36,11 @@ function App() {
   const totalTasks = tasks.length;
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = totalTasks - completedTasks;
+  const [showRegister, setShowRegister] = React.useState(false);
 
   return (
     <div className="app">
-      <Header onLogout={handleLogout} />
+      <Header onLogout={handleLogout} userName={userName} />
       {token ? (
         <>
           <Stats
@@ -59,7 +69,17 @@ function App() {
           />
         </>
       ) : (
-        <Login onLogin={handleLogin} error={autherror} />
+        <>
+          <button onClick={() => setShowRegister((prev) => !prev)}>
+            {showRegister ? "Go to Login" : "Go to Register"}
+          </button>
+
+          {showRegister ? (
+            <Register onRegister={handleRegistration} error={autherror} />
+          ) : (
+            <Login onLogin={handleLogin} error={autherror} />
+          )}
+        </>
       )}
     </div>
   );

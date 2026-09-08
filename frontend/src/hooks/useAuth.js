@@ -1,9 +1,27 @@
 import { useState } from "react";
 import API from "../services/api.js";
+import { useEffect } from "react";
+import { setSessionExpiredHandler as setOnSessionExpiredHandler } from "../services/api.js";
 
 export default function useAuth() {
   const [error, setError] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [userName, setUserName] = useState(null);
+
+  const handleRegistration = async (username, password) => {
+    try {
+      await API.post("/auth/register", {
+        username,
+        password,
+      });
+      setError("");
+      console.log("Registration successful");
+      handleLogin(username, password);
+    } catch (err) {
+      setError("Registration failed");
+      console.log(err);
+    }
+  };
 
   const handleLogin = async (username, password) => {
     try {
@@ -26,10 +44,37 @@ export default function useAuth() {
     setToken(null);
   };
 
+  const fetchUserName = async () => {
+    try {
+      const res = await API.get("/auth/me");
+      setUserName(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (!token) return;
+
+    fetchUserName();
+  }, [token]);
+
+  const handleSessionExpired = () => {
+    handleLogout();
+    setError("Session expired. Please log in again.");
+  };
+
+  useEffect(() => {
+    setOnSessionExpiredHandler(handleSessionExpired);
+  }, []);
+
   return {
     handleLogin,
     handleLogout,
     error,
     token,
+    userName,
+    fetchUserName,
+    handleRegistration,
   };
 }
