@@ -12,9 +12,11 @@ function App() {
     token,
     handleLogin,
     handleLogout,
-    error: autherror,
+    loginError,
+    registrationError,
     userName,
     handleRegistration,
+    clearError,
   } = useAuth();
   const {
     tasks,
@@ -37,6 +39,10 @@ function App() {
   const completedTasks = tasks.filter((task) => task.completed).length;
   const openTasks = totalTasks - completedTasks;
   const [showRegister, setShowRegister] = React.useState(false);
+  const handleToggleMode = () => {
+    setShowRegister((prev) => !prev);
+    clearError();
+  };
 
   return (
     <div className="app">
@@ -70,14 +76,17 @@ function App() {
         </>
       ) : (
         <>
-          <button onClick={() => setShowRegister((prev) => !prev)}>
+          <button onClick={handleToggleMode}>
             {showRegister ? "Go to Login" : "Go to Register"}
           </button>
 
           {showRegister ? (
-            <Register onRegister={handleRegistration} error={autherror} />
+            <Register
+              onRegister={handleRegistration}
+              error={registrationError}
+            />
           ) : (
-            <Login onLogin={handleLogin} error={autherror} />
+            <Login onLogin={handleLogin} error={loginError} />
           )}
         </>
       )}

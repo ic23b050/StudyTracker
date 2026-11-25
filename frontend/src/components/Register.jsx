@@ -3,9 +3,16 @@ import React from "react";
 function Register({ onRegister, error }) {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
+  const [errorMessageNotSamePassword, setErrorNotSamePassword] =
+    React.useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (password !== confirmPassword) {
+      setErrorNotSamePassword("Passwords do not match");
+      return;
+    }
     onRegister(username, password);
   };
 
@@ -31,9 +38,19 @@ function Register({ onRegister, error }) {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
+        <div>
+          <label htmlFor="confirmPassword">Confirm Password:</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+        </div>
         <button type="submit">Sign Up</button>
       </form>
       {error && <p>{error}</p>}
+      {errorMessageNotSamePassword && <p>{errorMessageNotSamePassword}</p>}
     </div>
   );
 }

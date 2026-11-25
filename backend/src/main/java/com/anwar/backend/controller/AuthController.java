@@ -4,6 +4,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.anwar.backend.dto.LoginRequest;
 import com.anwar.backend.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.anwar.backend.service.JwtService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.core.userdetails.UserDetails;
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,6 +35,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new ResponseStatusException(CONFLICT, "Username already exists");
+        }
        user.setPassword(passwordEncoder.encode(user.getPassword()));
        return userRepository.save(user);
     }
