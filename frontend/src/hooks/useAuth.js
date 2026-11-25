@@ -4,23 +4,14 @@ import { useEffect } from "react";
 import { setSessionExpiredHandler as setOnSessionExpiredHandler } from "../services/api.js";
 
 export default function useAuth() {
-  const [error, setError] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [registrationError, setRegistrationError] = useState("");
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [userName, setUserName] = useState(null);
 
-  const handleRegistration = async (username, password) => {
-    try {
-      await API.post("/auth/register", {
-        username,
-        password,
-      });
-      setError("");
-      console.log("Registration successful");
-      handleLogin(username, password);
-    } catch (err) {
-      setError("Registration failed");
-      console.log(err);
-    }
+  const clearError = () => {
+    setLoginError("");
+    setRegistrationError("");
   };
 
   const handleLogin = async (username, password) => {
@@ -32,9 +23,28 @@ export default function useAuth() {
 
       localStorage.setItem("token", res.data);
       setToken(res.data);
-      setError("");
+      setLoginError("");
     } catch (err) {
-      setError("Login failed");
+      setLoginError("Login failed");
+      console.log(err);
+    }
+  };
+
+  const handleRegistration = async (username, password) => {
+    try {
+      await API.post("/auth/register", {
+        username,
+        password,
+      });
+      setRegistrationError("");
+      console.log("Registration successful");
+      handleLogin(username, password);
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setRegistrationError("Username already exists");
+      } else {
+        setRegistrationError("Registration failed");
+      }
       console.log(err);
     }
   };
@@ -42,6 +52,7 @@ export default function useAuth() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     setToken(null);
+    setUserName(null);
   };
 
   const fetchUserName = async () => {
@@ -61,7 +72,7 @@ export default function useAuth() {
 
   const handleSessionExpired = () => {
     handleLogout();
-    setError("Session expired. Please log in again.");
+    setLoginError("Session expired. Please log in again.");
   };
 
   useEffect(() => {
@@ -71,10 +82,12 @@ export default function useAuth() {
   return {
     handleLogin,
     handleLogout,
-    error,
+    loginError,
+    registrationError,
     token,
     userName,
     fetchUserName,
     handleRegistration,
+    clearError,
   };
 }
