@@ -1,6 +1,3 @@
-import priority from "../hooks/useTasks";
-import setPriority from "../hooks/useTasks";
-
 function TaskItem({
   task,
   onToggle,
